@@ -301,9 +301,10 @@ c     &  (PUP(J,NUP),J=1,5),VTIMUP(NUP),SPINUP(NUP)
 C...Reset resonance momentum to prepare for mass shifts
         IF(ISTUP(NUP).EQ.2) PUP(3,NUP)=0
         IF(ISTUP(NUP).EQ.1)THEN
-          NEX=NEX+1
+           NEX=NEX+1
+C...Mrenna:  only if 4 < pdgId < 21
            IF(PUP(5,NUP).EQ.0D0.AND.IABS(IDUP(NUP)).GT.3
-     $         .AND.IDUP(NUP).NE.21) THEN
+     $         .AND.IDUP(NUP).LT.21) THEN
 C...Set massless particle masses to Pythia default. Adjust z-momentum. 
               PUP(5,NUP)=PMAS(IABS(PYCOMP(IDUP(NUP))),1)
               PUP(3,NUP)=SIGN(SQRT(MAX(0d0,PUP(4,NUP)**2-PUP(5,NUP)**2-
@@ -595,7 +596,7 @@ C   local variables
       INTEGER IMO
       logical norad(20)
       REAL*4 var2(nvar2)
-
+      
 c      if(NLJETS.GT.0)then
 c        idbg=1
 c      else
@@ -740,7 +741,11 @@ c     $     ihep)),' PID=',IDHEP(JMOHEP(1,ihep))
 c      ENDDO
 
       DO ihep=1,NHEP
-c         If status is 2 and a mother of 6<PID>nqmatch =>reject from particle list
+
+	if ( jmohep(1,ihep) .gt. 0 ) then
+c	
+c         If valid mother and status is 2 and a mother of 6<PID>nqmatch =>reject from particle list
+c 
          IF(ISTHEP(JMOHEP(1,ihep)).EQ.2
      $    .AND.iabs(IDHEP(JMOHEP(1,ihep))).GT.nqmatch.AND.
      $    iabs(IDHEP(JMOHEP(1,ihep))).LT.6) THEN
@@ -754,6 +759,9 @@ c     $      ihep)),' PID=',IDHEP(JMOHEP(1,ihep))
      $     nqmatch.AND.iabs(IDHEP(ihep)).LT.6.AND.
      $     ISTHEP(JMOHEP(1,ihep)).EQ.2.AND.iabs(IDHEP(JMOHEP(1,ihep)))
      $     .EQ.21) goto 999
+c
+        endif
+
       ENDDO
 c
 c      DO ihep=1,NHEP
